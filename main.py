@@ -6,15 +6,16 @@ import string
 import random
 import threading
 
-from WISEPaaS_SCADA.EdgeAgent import EdgeAgent
-from WISEPaaS_SCADA.Model.Edge import *
-import WISEPaaS_SCADA.Common.Constants as constant
-from WISEPaaS_SCADA.Common.Utils import RepeatedTimer
+from wisepaasscadasdk.EdgeAgent import EdgeAgent
+import wisepaasscadasdk.Common.Constants as constant
+from wisepaasscadasdk.Model.Edge import EdgeAgentOptions, MQTTOptions, DCCSOptions, EdgeData, EdgeTag, EdgeStatus, EdgeDeviceStatus, EdgeConfig, ScadaConfig, DeviceConfig, AnalogTagConfig, DiscreteTagConfig, TextTagConfig
+from wisepaasscadasdk.Common.Utils import RepeatedTimer
 
 class App():
 
   def __init__(self, master = None):
     self._edgeAgent = None
+    self.timer = None
     self.master = master
     master.title('SDK Test')
     master.geometry('580x240')
@@ -98,6 +99,7 @@ class App():
         App.status.set('Disconnected')
         statusLabel.config(bg='#C0C0C0')
         self._edgeAgent = None
+        self.timer = None
 
     def on_message(edgeAgent, message):
       if message.type == constant.MessageType['ConfigAck']:
@@ -118,8 +120,10 @@ class App():
       if self._edgeAgent is None or not self._edgeAgent.isConnected:
         messagebox.showwarning("Warging", 'edge not connected')
         return
-      # frequency = int(App.frequency.get())
-      __sendData()
+      frequency = int(App.frequency.get())
+      if self.timer is None:
+        self.timer = RepeatedTimer(frequency, __sendData)
+        __sendData()
 
     def __sendData():
       data = __generateData()
@@ -174,10 +178,7 @@ class App():
           deviceId = 'Device' + str(i)
           tagName = 'ATag' + str(j)
           value = random.uniform(0, 100)
-          tag = EdgeTag(deviceId, tagName, {
-            "0": value,
-            "1": value
-          })
+          tag = EdgeTag(deviceId, tagName, value)
           edgeData.tagList.append(tag)
         for j in range(1, int(App.discreteCount.get()) + 1):
           deviceId = 'Device' + str(i)
@@ -307,11 +308,11 @@ class App():
     ttk.Label(textFrame, text = 'Discrete Tag Count:').pack(side = tkinter.TOP)
     App.textCount = tkinter.IntVar()
     tkinter.Entry(textFrame, textvariable = App.textCount, width = 10).pack(side = tkinter.TOP)
-    # fraquencyFrame = tkinter.Frame(master)
-    # fraquencyFrame.grid(column = 3, row = 4, sticky = 'EWNS')
-    # ttk.Label(fraquencyFrame, text = 'Data Fredquency:').pack(side = tkinter.TOP)
-    # App.frequency = tkinter.IntVar()
-    # tkinter.Entry(fraquencyFrame, textvariable = App.frequency, width = 10).pack(side = tkinter.TOP)
+    fraquencyFrame = tkinter.Frame(master)
+    fraquencyFrame.grid(column = 3, row = 4, sticky = 'EWNS')
+    ttk.Label(fraquencyFrame, text = 'Data Fredquency:').pack(side = tkinter.TOP)
+    App.frequency = tkinter.IntVar()
+    tkinter.Entry(fraquencyFrame, textvariable = App.frequency, width = 10).pack(side = tkinter.TOP)
 
     # button
     ttk.Button(master, text = 'Connect', command = clickedConnect).grid(column = 2, row = 1, sticky = 'EWNS')
