@@ -200,7 +200,7 @@ class App():
       deviceStatus = EdgeDeviceStatus()
       for i in range(1, int(App.deviceCount.get()) + 1):
         deviceId = 'Device' + str(i)
-        device = EdgeDevice(id = deviceId, status = constant.Status['Online'])
+        device = EdgeStatus(id = deviceId, status = constant.Status['Online'])
         deviceStatus.deviceList.append(device)
       return deviceStatus
 
