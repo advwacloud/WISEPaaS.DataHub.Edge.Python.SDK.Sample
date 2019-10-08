@@ -308,7 +308,7 @@ class App():
     tkinter.Entry(discreteFrame, textvariable = App.discreteCount, width = 10).pack(side = tkinter.TOP)
     textFrame = tkinter.Frame(master)
     textFrame.grid(column = 2, row = 4, sticky = 'EWNS')
-    ttk.Label(textFrame, text = 'Discrete Tag Count:').pack(side = tkinter.TOP)
+    ttk.Label(textFrame, text = 'Text Tag Count:').pack(side = tkinter.TOP)
     App.textCount = tkinter.IntVar()
     App.textCount.set(5)
     tkinter.Entry(textFrame, textvariable = App.textCount, width = 10).pack(side = tkinter.TOP)
