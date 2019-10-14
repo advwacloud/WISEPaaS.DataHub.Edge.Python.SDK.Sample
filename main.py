@@ -111,9 +111,12 @@ class App():
           print("deviceId: {0}".format(device.id))
           for tag in device.tagList:
             print("tagName: {0}, Value: {1}".format(tag.name, str(tag.value)))
+            if device.id == "Device1" and tag.name == "DTag1":
+              App.dTag1Value.set(tag.value)
 
     def clickedDisconnected():
-      if self._edgeAgent is None or not self._edgeAgent.isConnected:        return
+      if self._edgeAgent is None or not self._edgeAgent.isConnected:
+        return
       self._edgeAgent.disconnect()
 
     def clickedSendData():
@@ -288,6 +291,12 @@ class App():
     ttk.Label(scadaFrame, text = 'ScadaId:').pack(side = tkinter.TOP)
     App.scadaId = tkinter.StringVar()
     tkinter.Entry(scadaFrame, textvariable = App.scadaId, width = 10).pack(side = tkinter.TOP)
+    wvFrame = tkinter.Frame(master)
+    wvFrame.grid(column = 1, row = 2, columnspan = 2, sticky = 'W')
+    ttk.Label(wvFrame, text = 'DTag1 Value:').pack(side = tkinter.TOP)
+    App.dTag1Value = tkinter.IntVar()
+    App.dTag1Value.set(1)
+    ttk.Label(wvFrame, textvariable = App.dTag1Value).pack(side = tkinter.TOP)
     deviceFrame = tkinter.Frame(master)
     deviceFrame.grid(column = 0, row = 3, columnspan = 2, sticky = 'W')
     ttk.Label(deviceFrame, text = 'Device Count:').pack(side = tkinter.TOP)
