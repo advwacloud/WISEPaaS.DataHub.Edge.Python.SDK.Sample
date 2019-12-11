@@ -30,7 +30,7 @@ class App():
     ttk.Label(dccsTab, text = 'API Url:').grid(column = 0, row = 0, sticky = 'EWNS')
     App.apiUrl = tkinter.StringVar()
     tkinter.Entry(dccsTab, textvariable = App.apiUrl, width = 10).grid(column = 1, row = 0, sticky = 'EWNS')
-    ttk.Label(dccsTab, text = 'Credentail Key:').grid(column = 0, row = 1, sticky = 'EWNS')
+    ttk.Label(dccsTab, text = 'Credential Key:').grid(column = 0, row = 1, sticky = 'EWNS')
     App.credentialKey = tkinter.StringVar()
     tkinter.Entry(dccsTab, textvariable = App.credentialKey, width = 10).grid(column = 1, row = 1, sticky = 'EWNS')
 
