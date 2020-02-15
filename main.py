@@ -6,10 +6,10 @@ import string
 import random
 import threading
 
-from wisepaasscadasdk.EdgeAgent import EdgeAgent
-import wisepaasscadasdk.Common.Constants as constant
-from wisepaasscadasdk.Model.Edge import EdgeAgentOptions, MQTTOptions, DCCSOptions, EdgeData, EdgeTag, EdgeStatus, EdgeDeviceStatus, EdgeConfig, ScadaConfig, DeviceConfig, AnalogTagConfig, DiscreteTagConfig, TextTagConfig
-from wisepaasscadasdk.Common.Utils import RepeatedTimer
+from wisepaasdatahubedgesdk.EdgeAgent import EdgeAgent
+import wisepaasdatahubedgesdk.Common.Constants as constant
+from wisepaasdatahubedgesdk.Model.Edge import EdgeAgentOptions, MQTTOptions, DCCSOptions, EdgeData, EdgeTag, EdgeStatus, EdgeDeviceStatus, EdgeConfig, NodeConfig, DeviceConfig, AnalogTagConfig, DiscreteTagConfig, TextTagConfig
+from wisepaasdatahubedgesdk.Common.Utils import RepeatedTimer
 
 class App():
 
@@ -67,11 +67,11 @@ class App():
     # function
     def clickedConnect():
       try:
-        if App.scadaId.get() == '':
-          messagebox.showwarning("Warging", 'scadaId is necessary')
+        if App.nodeId.get() == '':
+          messagebox.showwarning("Warging", 'nodeId is necessary')
           return
         selectTab = tabControl.tab(tabControl.select(), 'text')
-        edgeAgentOptions = EdgeAgentOptions(scadaId = App.scadaId.get())
+        edgeAgentOptions = EdgeAgentOptions(nodeId = App.nodeId.get())
         if selectTab == 'MQTT':
           edgeAgentOptions.connectType = constant.ConnectType['MQTT']
           mqttOptions = MQTTOptions(hostName = App.hostName.get(), port = App.port.get(), userName = App.userName.get(), password = App.password.get())
@@ -153,11 +153,11 @@ class App():
       config = __generateConfig()
       self._edgeAgent.uploadConfig(action = constant.ActionType['Update'], edgeConfig = config)
 
-    def clickedDeleteScada():
+    def clickedDeleteNode():
       if self._edgeAgent is None or not self._edgeAgent.isConnected:
         messagebox.showwarning("Warging", 'edge not connected')
         return
-      config = __generateDelteScadaConfig()
+      config = __generateDelteNodeConfig()
       self._edgeAgent.uploadConfig(action = constant.ActionType['Delete'], edgeConfig = config)
 
     def clickedDeleteDevice():
@@ -209,15 +209,14 @@ class App():
 
     def __generateConfig():
       config = EdgeConfig()
-      scadaConfig = ScadaConfig(name = 'Test_Scada',
-        description = 'For Test',
-        scadaType = constant.EdgeType['Gateway'])
-      config.scada = scadaConfig
+      nodeConfig = NodeConfig(nodeType = constant.EdgeType['Gateway'])
+      config.node = nodeConfig
       for i in range(1, int(App.deviceCount.get()) + 1):
         deviceConfig = DeviceConfig(id = 'Device' + str(i),
           name = 'Device' + str(i),
           description = 'Device' + str(i),
-          deviceType = 'Smart Device')
+          deviceType = 'Smart Device',
+          retentionPolicyName = '')
         for j in range(1, int(App.analogCount.get()) + 1):
           analog = AnalogTagConfig(name = 'ATag' + str(j),
             description = 'ATag ' + str(j),
@@ -249,28 +248,28 @@ class App():
             readOnly = False,
             arraySize = 0)
           deviceConfig.textTagList.append(text)
-        config.scada.deviceList.append(deviceConfig)
+        config.node.deviceList.append(deviceConfig)
       return config
 
-    def __generateDelteScadaConfig():
+    def __generateDelteNodeConfig():
       config = EdgeConfig()
-      scadaConfig = ScadaConfig()
-      config.scada = scadaConfig
+      nodeConfig = NodeConfig()
+      config.node = nodeConfig
       return config
 
     def __generateDelteDeviceConfig():
       config = EdgeConfig()
-      scadaConfig = ScadaConfig()
-      config.scada = scadaConfig
+      nodeConfig = NodeConfig()
+      config.node = nodeConfig
       for i in range(1, int(App.deviceCount.get()) + 1):
         deviceConfig = DeviceConfig(id = 'Device' + str(i))
-        config.scada.deviceList.append(deviceConfig)
+        config.node.deviceList.append(deviceConfig)
       return config
 
     def __generateDelteTagConfig():
       config = EdgeConfig()
-      scadaConfig = ScadaConfig()
-      config.scada = scadaConfig
+      nodeConfig = NodeConfig()
+      config.node = nodeConfig
       for i in range(1, int(App.deviceCount.get()) + 1):
         deviceConfig = DeviceConfig(id = 'Device' + str(i))
         for j in range(1, int(App.analogCount.get()) + 1):
@@ -282,15 +281,15 @@ class App():
         for j in range(1, int(App.textCount.get()) + 1):
           text = TextTagConfig(name = 'TTag' + str(j))
           deviceConfig.textTagList.append(text)
-        config.scada.deviceList.append(deviceConfig)
+        config.node.deviceList.append(deviceConfig)
       return config
 
     # input
-    scadaFrame = tkinter.Frame(master)
-    scadaFrame.grid(column = 0, row = 2, columnspan = 2, sticky = 'W')
-    ttk.Label(scadaFrame, text = 'ScadaId:').pack(side = tkinter.TOP)
-    App.scadaId = tkinter.StringVar()
-    tkinter.Entry(scadaFrame, textvariable = App.scadaId, width = 10).pack(side = tkinter.TOP)
+    nodeFrame = tkinter.Frame(master)
+    nodeFrame.grid(column = 0, row = 2, columnspan = 2, sticky = 'W')
+    ttk.Label(nodeFrame, text = 'NodeId:').pack(side = tkinter.TOP)
+    App.nodeId = tkinter.StringVar()
+    tkinter.Entry(nodeFrame, textvariable = App.nodeId, width = 10).pack(side = tkinter.TOP)
     wvFrame = tkinter.Frame(master)
     wvFrame.grid(column = 1, row = 2, columnspan = 2, sticky = 'W')
     ttk.Label(wvFrame, text = 'DTag1 Value:').pack(side = tkinter.TOP)
@@ -335,7 +334,7 @@ class App():
     ttk.Button(master, text = 'Send Data', command = clickedSendData).grid(column = 3, row = 2, sticky = 'EWNS')
     ttk.Button(master, text = 'Upload Config', command = clickedUploadConfig).grid(column = 4, row = 0, sticky = 'EWNS')
     ttk.Button(master, text = 'Update Config', command = clickedUpdateConfig).grid(column = 4, row = 1, sticky = 'EWNS')
-    ttk.Button(master, text = 'Delete All Config', command = clickedDeleteScada).grid(column = 4, row = 2, sticky = 'EWNS')
+    ttk.Button(master, text = 'Delete All Config', command = clickedDeleteNode).grid(column = 4, row = 2, sticky = 'EWNS')
     ttk.Button(master, text = 'Delete Devices', command = clickedDeleteDevice).grid(column = 4, row = 3, sticky = 'EWNS')
     ttk.Button(master, text = 'Delete Tag', command = clickedDeleteTag).grid(column = 4, row = 4, sticky = 'EWNS')
 

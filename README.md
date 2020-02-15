@@ -1,4 +1,4 @@
-# WISEPaaS.SCADA.Python.SDK.Sample
+# WISEPaaS.DataHub.Edge.Python.SDK.Sample
 
 #### Prepare
 - Python: 3.6
@@ -6,7 +6,7 @@
 
 #### Installation
 ```
-pip install WISE_PaaS_SCADA_Python_SDK --upgrade
+pip install WISE_PaaS_DataHub_Edge_Python_SDK --upgrade
 ```
 
 #### Launch App
