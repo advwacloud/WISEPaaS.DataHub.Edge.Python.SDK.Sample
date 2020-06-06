@@ -1,3 +1,4 @@
+import datetime
 import time
 import tkinter 
 from tkinter import ttk
@@ -197,6 +198,8 @@ class App():
           value = 'TEST ' + str(value)
           tag = EdgeTag(deviceId, tagName, value)
           edgeData.tagList.append(tag)
+          
+      edgeData.timestamp = datetime.datetime.now()
       return edgeData
 
     def __generateStatus():
