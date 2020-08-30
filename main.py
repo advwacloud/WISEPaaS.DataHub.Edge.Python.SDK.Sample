@@ -199,8 +199,8 @@ class App():
           tag = EdgeTag(deviceId, tagName, value)
           edgeData.tagList.append(tag)
 
-      edgeData.timestamp = datetime.datetime.utcnow()
-      #edgeData.timestamp = datetime.datetime(2020,8,24,6,10,8)  // you can defne the timestamp of data
+      edgeData.timestamp = datetime.datetime.now()
+      #edgeData.timestamp = datetime.datetime(2020,8,24,6,10,8)  # you can defne the timestamp(local time) of data 
       return edgeData
 
     def __generateStatus():
