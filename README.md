@@ -9,7 +9,12 @@
 pip install WISE_PaaS_DataHub_Edge_Python_SDK --upgrade
 ```
 
-#### Launch App
+#### Launch a GUI application
 ```
 python main.py
+```
+
+#### Execute a console application
+```
+python console.py
 ```
