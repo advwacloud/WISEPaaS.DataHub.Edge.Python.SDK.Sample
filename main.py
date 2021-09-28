@@ -175,6 +175,36 @@ class App():
       config = __generateDelteTagConfig()
       self._edgeAgent.uploadConfig(action = constant.ActionType['Delete'], edgeConfig = config)
 
+    def __generateBatchData():  # send data in batch for high frequency data
+      array = []
+      for n in range(1, 10):
+        edgeData = EdgeData()
+        for i in range(1, int(App.deviceCount.get()) + 1):
+          for j in range(1, int(App.analogCount.get()) + 1):
+            deviceId = 'Device' + str(i)
+            tagName = 'ATag' + str(j)
+            value = random.uniform(0, 100)
+            tag = EdgeTag(deviceId, tagName, value)
+            edgeData.tagList.append(tag)
+          for j in range(1, int(App.discreteCount.get()) + 1):
+            deviceId = 'Device' + str(i)
+            tagName = 'DTag' + str(j)
+            value = random.randint(0,99)
+            value = value % 2
+            tag = EdgeTag(deviceId, tagName, value)
+            edgeData.tagList.append(tag)
+          for j in range(1, int(App.textCount.get()) + 1):
+            deviceId = 'Device' + str(i)
+            tagName = 'TTag' + str(j)
+            value = random.uniform(0, 100)
+            value = 'TEST ' + str(value)
+            tag = EdgeTag(deviceId, tagName, value)
+            edgeData.tagList.append(tag)
+
+        edgeData.timestamp = datetime.datetime.now()
+        array.append(edgeData)
+      return array
+
     def __generateData():
       edgeData = EdgeData()
       for i in range(1, int(App.deviceCount.get()) + 1):
@@ -238,13 +268,7 @@ class App():
             readOnly = False,
             arraySize = 0,
             state0 = '0',
-            state1 = '1',
-            state2 = '',
-            state3 = '',
-            state4 = '',
-            state5 = '',
-            state6 = '',
-            state7 = '')
+            state1 = '1')
           deviceConfig.discreteTagList.append(discrete)
         for j in range(1, int(App.textCount.get()) + 1):
           text = TextTagConfig(name = 'TTag' + str(j),
